@@ -1,9 +1,17 @@
+Type: Package
 Package: topicl
-Title: What the Package Does (one line, title case)
+Title: Tools for Finding Stable Topics and Analyzing them
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.3.2)
-License: What license is it under?
+Authors@R: 
+    person("Sergei", "Pashakhin", , "pashakhin@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-0361-2064"))
+URL: https://github.com/paskn/topicl/
+BugReports: https://github.com/paskn/topicl/issues
+Description: Given a bunch of topic models (LDA or STM), compute topic-to-topic similarity and find the reproducible topics. 
+License: GPL (>= 3)
 Encoding: UTF-8
-LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    parallel
+    doSNOW

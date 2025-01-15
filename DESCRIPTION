@@ -7,11 +7,16 @@ Authors@R:
            comment = c(ORCID = "0000-0003-0361-2064"))
 URL: https://github.com/paskn/topicl/
 BugReports: https://github.com/paskn/topicl/issues
-Description: Given a bunch of topic models (LDA or STM), compute topic-to-topic similarity and find the reproducible topics. 
+Description: Given a bunch of topic models (LDA or STM), compute topic-to-topic
+             similarity and find the reproducible topics. 
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
-    parallel
-    doSNOW
+    parallel (>= 1.0.20),
+    doSNOW (>= 1.0.20),
+    tibble (>= 3.2.1),
+    tidytext (>= 0.4.2),
+    dplyr(>= 1.1.4),
+    stm (>= 1.3.7)

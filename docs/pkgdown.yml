@@ -1,0 +1,8 @@
+pandoc: '3.5'
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles: {}
+last_built: 2025-01-15T18:20Z
+urls:
+  reference: https://www.pashakhin.org/topicl/reference
+  article: https://www.pashakhin.org/topicl/articles

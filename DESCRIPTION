@@ -5,7 +5,7 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Sergei", "Pashakhin", , "pashakhin@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-0361-2064"))
-URL: https://github.com/paskn/topicl/
+URL: https://www.pashakhin.org/topicl/
 BugReports: https://github.com/paskn/topicl/issues
 Description: Given a bunch of topic models (LDA or STM), compute topic-to-topic
              similarity and find the reproducible topics. 

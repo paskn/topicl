@@ -1,10 +1,21 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 
 # topicl
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 The goal of topicl is to provide tools for identifying stable
@@ -24,7 +35,7 @@ pak::pak("paskn/topicl")
 
 This is a basic example which shows you how to solve a common problem:
 
-``` r
+```{r example, message=FALSE, warning=FALSE}
 library(topicl)
 library(stm)
 library(dplyr)
@@ -50,12 +61,6 @@ modB <- stm(poliblog5k.docs,
 compare_solutions(list(modA, modB), depth=500) |> 
   arrange(desc(jaccard)) |> 
   head()
-#> [1] "Done"
-#>   model_id_1 model_id_2 topic_id_1 topic_id_2   jaccard
-#> 1      mod_1      mod_2    topic_4   topic_24 0.1614402
-#> 2      mod_1      mod_2    topic_4   topic_25 0.1614402
-#> 3      mod_1      mod_2    topic_5    topic_1 0.1614402
-#> 4      mod_1      mod_2    topic_5    topic_2 0.1614402
-#> 5      mod_1      mod_2    topic_5    topic_3 0.1614402
-#> 6      mod_1      mod_2    topic_5    topic_4 0.1614402
+
 ```
+

@@ -6,7 +6,7 @@
 #' @param topic_n topic ID (numeric).
 #' @param top_n_terms the number of terms to return.
 #'
-#' @returns a tibble with a ranked list of terms.
+#' @returns A tibble with a ranked list of terms.
 #' @export
 #'
 #' @examples

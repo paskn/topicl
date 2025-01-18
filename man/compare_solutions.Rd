@@ -7,13 +7,13 @@
 compare_solutions(models, depth = 100)
 }
 \arguments{
-\item{models}{a list object with STM models. Must be at least 2 models.}
+\item{models}{A list object with STM models. Must be at least 2 models.}
 
-\item{depth}{the number of top terms to use for comparison. Default is top
+\item{depth}{The number of top terms to use for comparison. Default is top
 100 terms.}
 }
 \value{
-a tibble with model-to-model topic-to-topic Jaccard similarity.
+A tibble with model-to-model topic-to-topic Jaccard similarity.
 }
 \description{
 Pair-Wisely Compare Topic Solutions with Jaccard

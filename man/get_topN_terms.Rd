@@ -14,7 +14,7 @@ get_topN_terms(mod, topic_n, top_n_terms)
 \item{top_n_terms}{the number of terms to return.}
 }
 \value{
-a tibble with a ranked list of terms.
+A tibble with a ranked list of terms.
 }
 \description{
 Returns top-N terms for a topic ranked by probability.

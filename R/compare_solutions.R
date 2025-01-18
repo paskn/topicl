@@ -1,10 +1,10 @@
 #' Pair-Wisely Compare Topic Solutions with Jaccard
 #'
-#' @param models a list object with STM models. Must be at least 2 models.
-#' @param depth the number of top terms to use for comparison. Default is top 
+#' @param models A list object with STM models. Must be at least 2 models.
+#' @param depth The number of top terms to use for comparison. Default is top 
 #' 100 terms.
 #'
-#' @returns a tibble with model-to-model topic-to-topic Jaccard similarity.
+#' @returns A tibble with model-to-model topic-to-topic Jaccard similarity.
 #' @export
 #'
 #' @examples

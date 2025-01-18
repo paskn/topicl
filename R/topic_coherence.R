@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' df1 <- tibble(col1 = c("apple", "banana", "cherry"), col2 = c("dog", "cat", "mouse"))
+#' df1 <- tibble::tibble(col1 = c("apple", "banana", "cherry"), col2 = c("dog", "cat", "mouse"))
 #' 
 #' ask_palmetto(df1)
 ask_palmetto <- function(solution, depth = "full", coherence = "npmi", backend = "web") {
@@ -27,6 +27,11 @@ ask_palmetto <- function(solution, depth = "full", coherence = "npmi", backend =
       depth <- 10
     }
   }
+
+  library(httr2)
+  library(tibble)
+  library(purrr)
+  
   palmetto_path <- backend
   ## TODO: rewrite for the type format of input
   reqs <- list()

@@ -22,7 +22,7 @@ A wide tibble with requested coherence scores.
 Get topic coherence from Palmetto remote or local
 }
 \examples{
-df1 <- tibble(col1 = c("apple", "banana", "cherry"), col2 = c("dog", "cat", "mouse"))
+df1 <- tibble::tibble(col1 = c("apple", "banana", "cherry"), col2 = c("dog", "cat", "mouse"))
 
 ask_palmetto(df1)
 }

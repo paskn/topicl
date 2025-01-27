@@ -131,4 +131,65 @@ filter_topics <- function(res, sim_threshold, n_sols) {
 
   return(relevant_topics)
 }
+
+#' Visualize topic similarities with a network
+#'
+#' @param res output of `compare_solutions()`
+#' @param sim_threshold Jaccard similarity threshold for filtering.
+#'
+#' @returns ggraph plot.
+#' @export
+viz_comparisons <- function(res, sim_threshold) {
+  #library(igraph)
+  #library(ggraph)
+  #library(tidygraph)
+  #library(dplyr)
+
+  filtered_results <- res |> 
+    dplyr::filter(jaccard >= sim_threshold) |> 
+    dplyr::mutate(
+      # Create identifiers for topics and models
+      topic_1 = paste(model_id_A, topic_id_A, sep = "_"),
+      topic_2 = paste(model_id_B, topic_id_B, sep = "_")
+    ) |> 
+    dplyr::filter(model_id_A == "mod_1")  # Only keep pairs involving model_1 topics
+
+  # Prepare edge list (connections between topics)
+  edges <- filtered_results |>
+    dplyr::select(topic_1, topic_2, jaccard)
+
+  # Prepare node list (unique topics with model information)
+  nodes <- filtered_results |>
+    dplyr::select(topic_1, model_id_A) |>
+    dplyr::rename(topic = topic_1, model = model_id_A) |>
+    dplyr::distinct() |>
+    dplyr::bind_rows(
+      filtered_results |>
+        dplyr::select(topic_2, model_id_B) |>
+        dplyr::rename(topic = topic_2, model = model_id_B) |>
+        dplyr::distinct()
+    ) |>
+    dplyr::distinct()
+
+  # Convert nodes to a factor for consistent coloring
+  nodes <- nodes |>
+    dplyr::mutate(model = as.factor(model))
+
+  # Create the graph object
+  graph <- tidygraph::tbl_graph(nodes = nodes,
+                     edges = edges,
+                     directed = FALSE)
+
+  # Visualize the graph
+  ggraph::ggraph(graph, layout = "fr") +  # 'fr' = Fruchterman-Reingold layout
+    ggraph::geom_edge_link(ggplot2::aes(alpha = jaccard), color = "gray") +  # Edges
+    ggraph::geom_node_point(ggplot2::aes(color = model), alpha = 0.9) +  # Nodes
+    ggraph::geom_node_text(ggplot2::aes(label = topic), repel = TRUE, size = 3) +  # Labels
+    ggplot2::scale_color_brewer(palette = "Set2") +  # Distinct colors for models
+    ggplot2::theme_void() +
+    ggplot2::labs(title = "Topic Similarity Network",
+         subtitle = "Topics from model_1 connected to others by Jaccard similarity",
+         edge_width = "Jaccard Index") +
+    ggplot2::theme(legend.position = "bottom")
+  
 }

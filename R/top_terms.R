@@ -3,8 +3,8 @@
 #' Returns top-N terms for a topic ranked by probability.
 #'
 #' @param mod an object with STM or LDA model.
-#' @param topic_n topic ID (numeric).
-#' @param top_n_terms the number of terms to return.
+#' @param topic_id topic ID (numeric).
+#' @param n_terms the number of terms to return.
 #'
 #' @returns A tibble with a ranked list of terms.
 #' @export
@@ -19,13 +19,20 @@
 #'            max.em.its=2, 
 #'            init.type="Spectral") 
 #' 
-#' get_topN_terms(mod, 1, 100)
-get_topN_terms <- function(mod, topic_n, top_n_terms) {
+#' top_terms(mod, 1, 100)
+top_terms <- function(mod, topic_id, n_terms) {
   ## extract top-N terms for a given topic (by probability)
-  output <- mod |>
-    tidytext::tidy() |>
-    dplyr::filter(topic == topic_n) |>
-    dplyr::slice_max(beta, n=top_n_terms)
+  if (class(mod) == "STM") {
+    output <- mod |>
+      tidytext::tidy(matrix = "beta",
+                     log = FALSE) |>
+      dplyr::filter(topic == topic_id) |>
+      dplyr::slice_max(beta, n=n_terms)
 
-  return(output)
+    return(output)
+  } else {
+    stop("Can take only STM model for now.")
+  }
+  
+  
 }

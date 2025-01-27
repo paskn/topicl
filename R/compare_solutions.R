@@ -98,4 +98,37 @@ compare_solutions <- function(models, depth = 100) {
 
   return(results)
 }
+
+#' Summarize solution comparisons
+#'
+#' @param res output from `compare_solutions()`
+#' @param sim_threshold level of Jaccard similarity for filtering stable topics.
+#' @param n_sols the number of fits to decide if a topic is stable.
+#'
+#' @returns tibble with counts of topic persistence across fits.
+#' @export
+filter_topics <- function(res, sim_threshold, n_sols) {
+  # Filter results by Jaccard similarity and focus on model_1 topics
+  filtered_results <- res |> 
+    dplyr::filter(jaccard >= sim_threshold) |> 
+    dplyr::mutate(
+      # Create identifiers for topics and models
+      topic_1 = paste(model_id_A, topic_id_A, sep = "_"),
+      topic_2 = paste(model_id_B, topic_id_B, sep = "_")
+    ) |> 
+    dplyr::filter(model_id_A == "mod_1")  # Only keep pairs involving model_1 topics
+
+  # Count how many distinct models each topic from model_1 is similar to
+  topic_summary <- filtered_results |>
+    dplyr::group_by(topic_1) |>
+    dplyr::reframe(
+      distinct_models = dplyr::n_distinct(model_id_B)  # Count unique models in model_2
+    )
+
+  # Filter topics that appear in at least 2 other models
+  relevant_topics <- topic_summary |>
+    dplyr::filter(distinct_models >= n_sols)
+
+  return(relevant_topics)
+}
 }

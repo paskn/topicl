@@ -21,4 +21,13 @@ Imports:
     dplyr(>= 1.1.4),
     stm (>= 1.3.7),
     httr2 (>= 1.0.7),
-    jsonlite (>= 1.8.8)
+    jsonlite (>= 1.8.8),
+    cli (>= 3.6.3),
+    ggplot2 (>= 3.5.1),
+    ggraph (>= 2.2.1),
+    purrr(>= 1.0.2),
+    tidygraph (>= 1.3.1)
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

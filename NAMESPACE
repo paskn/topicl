@@ -3,4 +3,6 @@
 export(ask_palmetto)
 export(calcjaccard)
 export(compare_solutions)
-export(get_topN_terms)
+export(filter_topics)
+export(top_terms)
+export(viz_comparisons)

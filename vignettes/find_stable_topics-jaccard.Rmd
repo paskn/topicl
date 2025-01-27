@@ -1,0 +1,126 @@
+---
+title: "Find stable topics in STM with Jaccard similarity"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{find_stable_topics-jaccard}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+#mods <- readRDS("../mod.RDS")
+```
+
+This vignette shows how to use `topicl` to find stable (reproducible)
+topics with Jaccard similarity. This method is presented in (Koltsov
+et al., 2018), but can be shortly summarized as follows.
+
+A stable topic is a topic that persists across fits of a topic model to
+the data. Thus, keeping model parameters fixed, a stable topic must
+appear in a majority of fits. Across fits, we compare topics to each
+other to test whether a given pair is the same. For comparison, we use
+compute Jaccard similarity on N top-words for a topic. Papers by
+Koltosov and colleagues advise fitting at least five models and
+consider a given pair of topics identical if their Jaccard similarity
+is =< 90%. Then, if a stable topic persisted across at least 3 out of 5
+model runs, you can consider this topic stable.
+
+In this vignette, we will fit five STM models to `poliblog5k` (see
+`?stm::poliblog5k` for details) and consider how many topics persists
+using `topicl`.
+
+```{r, setup, message=F, warning=F}
+library(topicl)
+library(stm)
+library(tictoc)
+library(furrr)
+```
+
+`fit_stm` specifies STM parameters. We increase the maximum number of
+iterations for the EM algorithm and ensure that each iteration is
+performed with `max_it = 1000` and `emtol = 0` - see `?stm` for
+details. In my experience, with an increased number of iterations on these
+data, topic similarity across fits also increases. I cannot say if `K
+= 25` is optimal for these data, but this number of topics is used in
+STM documentation.
+
+With <random.org>, we generated five random `seeds` for each model.
+
+```{r model-specification}
+fit_stm <- function(seed) {
+  K = 25
+  max_it = 1000
+  emtol = 0
+  
+  mod <- stm(poliblog5k.docs, 
+            poliblog5k.voc, K=K,            
+            data=poliblog5k.meta,
+            max.em.its=max_it,
+            emtol = emtol,
+            init.type="Random",
+            seed = seed,
+            verbose = F)
+  return(mod)
+}
+
+
+seeds <- c(9934,9576,1563,3379,8505)
+```
+
+With `purrr::future_map()`, we fit five models with different seeds in
+parallel. Given the high number of iterations, it can take up to 40
+minutes. 
+
+```{r, fit-models}
+tic()
+plan(multisession, workers = 5) # toggle multiple parallel processes
+mods <- future_map(seeds, fit_stm,                   
+                   .options = furrr_options(seed=T))
+plan(sequential) # toggle back to sequential
+toc()
+```
+
+We use `topicl::compare_solutions()` to calculate topic similarity on
+the level of `depth = 10` top terms for a topic. By default, top terms
+are produced by ranking term probabilities. Please note that (Koltsov
+et al., 2018) advice using 100 top terms.
+
+```{r compare-topics}
+results <- compare_solutions(mods, depth = 10)
+```
+
+What topics are similar and appear across fits is helpful to visualize
+with a network plot. Given output of `topicl::compare_solutions()` and a
+threshold, `topicl::viz_comparisons()` will plot a topic-topic network.
+Here, we plot connections between topics =< 80% similarity.
+
+```{r visualize-topic-similarity}
+viz_comparisons(results, 0.8)
+```
+
+With `topic::filter_topics()`, we can get a table with topic IDs and
+counts of their distinct pairs in other models.
+
+```{r count-topic-appearance}
+filter_topics(results, 0.5, 2)
+```
+
+# References
+
+1. Koltsov, S., Pashakhin, S., & Dokuka, S. (2018). A Full-Cycle
+   Methodology for News Topic Modeling and User Feedback Research. In
+   S. Staab, O. Koltsova, & D. I. Ignatov (Eds.), Social Informatics
+   (Vol. 11185, pp. 308–321). Springer International Publishing.
+   <https://doi.org/10.1007/978-3-030-01129-1_19>
+
+
+# Appendix
+
+```{r sessionInfo}
+sessionInfo()
+```

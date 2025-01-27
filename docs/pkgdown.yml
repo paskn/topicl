@@ -1,8 +1,9 @@
 pandoc: '3.5'
 pkgdown: 2.1.1
 pkgdown_sha: ~
-articles: {}
-last_built: 2025-01-18T20:28Z
+articles:
+  find_stable_topics-jaccard: find_stable_topics-jaccard.html
+last_built: 2025-01-27T12:56Z
 urls:
   reference: https://www.pashakhin.org/topicl/reference
   article: https://www.pashakhin.org/topicl/articles

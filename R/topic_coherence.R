@@ -48,7 +48,7 @@ ask_palmetto <- function(solution, depth = "full", coherence = "npmi", backend =
                  "?words=",
                  topic_terms,
                  sep = "") |>
-      request()
+      httr2::request()
     ## |> 
       ## req_retry(retry_on_failure = TRUE)
 
@@ -57,15 +57,15 @@ ask_palmetto <- function(solution, depth = "full", coherence = "npmi", backend =
   
   ## dispatch requests
   resps <- reqs |>
-    req_perform_parallel(on_error = "continue",
+    httr2::req_perform_parallel(on_error = "continue",
                          progress = paste("fetching",
                                           coherence, "from",
                                           sub("^https?://([^/]+)/.*", "\\1",
                                               backend)))
   names(resps) <- ids
   out <- resps |>
-    map(c(resp_body_string, as.numeric)) |>
-    as_tibble()
+    purrr::map(c(httr2::resp_body_string, as.numeric)) |>
+    tibble::as_tibble()
   
   return(out)
 }

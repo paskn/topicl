@@ -27,7 +27,7 @@ other to test whether a given pair is the same. For comparison, we use
 compute Jaccard similarity on N top-words for a topic. Papers by
 Koltosov and colleagues advise fitting at least five models and
 consider a given pair of topics identical if their Jaccard similarity
-is =< 90%. Then, if a stable topic persisted across at least 3 out of 5
+is >= 90%. Then, if a stable topic persisted across at least 3 out of 5
 model runs, you can consider this topic stable.
 
 In this vignette, we will fit five STM models to `poliblog5k` (see
@@ -39,6 +39,7 @@ library(topicl)
 library(stm)
 library(tictoc)
 library(furrr)
+library(dplyr)
 ```
 
 `fit_stm` specifies STM parameters. We increase the maximum number of
@@ -72,7 +73,7 @@ fit_stm <- function(seed) {
 seeds <- c(9934,9576,1563,3379,8505)
 ```
 
-With `purrr::future_map()`, we fit five models with different seeds in
+With `furrr::future_map()`, we fit five models with different seeds in
 parallel. Given the high number of iterations, it can take up to 40
 minutes. 
 
@@ -94,10 +95,44 @@ et al., 2018) advice using 100 top terms.
 results <- compare_solutions(mods, depth = 10)
 ```
 
+`compare_solutions()` produces a table with showing the results of
+comparisons. Here is how to read this output: each row shows a
+comparison of a topic A (column `topic_id_A`) from model A (column
+`model_id_A`) to topic B from model B (`topic_id_B` and `model_id_B`).
+
+```{r results}
+results |> 
+  arrange(desc(jaccard)) |> 
+  head(10)
+```
+
+If model and topic IDs from the table above are confusing, they can be
+matched back to `mods`, which is a list containing models in the order
+of model IDs from the `compare_solutions()`.
+
+```{r models-ids}
+print(mods)
+```
+
+Topic IDs match IDs inside each model. To manually check the terms
+used for comparison of a given pair, you can use `top_terms()`. Let's
+compare the terms from topic 13 of model 1 to topic 1 from model 4,
+which showed 100% Jaccard similarity in the output of
+`compare_solutions()`.
+
+```{r}
+top_terms(mods[[1]], topic_id = 13,n_terms = 10)
+```
+
+```{r}
+top_terms(mods[[4]], topic_id = 1,n_terms = 10)
+```
+
+
 What topics are similar and appear across fits is helpful to visualize
 with a network plot. Given output of `topicl::compare_solutions()` and a
 threshold, `topicl::viz_comparisons()` will plot a topic-topic network.
-Here, we plot connections between topics =< 80% similarity.
+Here, we plot connections between topics >= 80% similarity.
 
 ```{r visualize-topic-similarity}
 viz_comparisons(results, 0.8)

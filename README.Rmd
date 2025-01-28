@@ -33,6 +33,10 @@ pak::pak("paskn/topicl")
 
 ## Example
 
+See
+[vignette](https://www.pashakhin.org/topicl/articles/find_stable_topics-jaccard.html)
+for details.
+
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example, message=FALSE, warning=FALSE}

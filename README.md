@@ -22,6 +22,10 @@ pak::pak("paskn/topicl")
 
 ## Example
 
+See
+[vignette](https://www.pashakhin.org/topicl/articles/find_stable_topics-jaccard.html)
+for details.
+
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
@@ -50,12 +54,13 @@ modB <- stm(poliblog5k.docs,
 compare_solutions(list(modA, modB), depth=500) |> 
   arrange(desc(jaccard)) |> 
   head()
-#> [1] "Done"
-#>   model_id_1 model_id_2 topic_id_1 topic_id_2   jaccard
-#> 1      mod_1      mod_2    topic_4   topic_24 0.1614402
-#> 2      mod_1      mod_2    topic_4   topic_25 0.1614402
-#> 3      mod_1      mod_2    topic_5    topic_1 0.1614402
-#> 4      mod_1      mod_2    topic_5    topic_2 0.1614402
-#> 5      mod_1      mod_2    topic_5    topic_3 0.1614402
-#> 6      mod_1      mod_2    topic_5    topic_4 0.1614402
+#> # A tibble: 6 × 5
+#>   model_id_A topic_id_A model_id_B topic_id_B jaccard
+#>   <chr>      <chr>      <chr>      <chr>        <dbl>
+#> 1 mod_1      topic_4    mod_2      topic_24     0.161
+#> 2 mod_1      topic_7    mod_2      topic_6      0.152
+#> 3 mod_1      topic_4    mod_2      topic_3      0.144
+#> 4 mod_1      topic_24   mod_2      topic_24     0.143
+#> 5 mod_1      topic_3    mod_2      topic_5      0.142
+#> 6 mod_1      topic_4    mod_2      topic_9      0.142
 ```

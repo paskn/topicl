@@ -119,3 +119,5 @@ flycheck_*.el
 /network-security.data
 #docs
 inst/doc
+/doc/
+/Meta/

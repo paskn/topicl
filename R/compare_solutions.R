@@ -5,6 +5,7 @@
 #' 100 terms.
 #'
 #' @returns A tibble with model-to-model topic-to-topic Jaccard similarity.
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -44,7 +45,7 @@ compare_solutions <- function(models, depth = 100) {
   top_terms_list <- lapply(models, function(mod) {
     lapply(seq_len(k), function(topic_id) {
       top_terms(mod = mod, topic_id = topic_id, n_terms = depth) |>
-        dplyr::select(term) |>
+        dplyr::select(.data$term) |>
         tibble::deframe()
     })
   })
@@ -106,28 +107,29 @@ compare_solutions <- function(models, depth = 100) {
 #' @param n_sols the number of fits to decide if a topic is stable.
 #'
 #' @returns tibble with counts of topic persistence across fits.
+#' @importFrom rlang .data
 #' @export
 filter_topics <- function(res, sim_threshold, n_sols) {
   # Filter results by Jaccard similarity and focus on model_1 topics
   filtered_results <- res |> 
-    dplyr::filter(jaccard >= sim_threshold) |> 
+    dplyr::filter(.data$jaccard >= sim_threshold) |> 
     dplyr::mutate(
       # Create identifiers for topics and models
-      topic_1 = paste(model_id_A, topic_id_A, sep = "_"),
-      topic_2 = paste(model_id_B, topic_id_B, sep = "_")
+      topic_1 = paste(.data$model_id_A, .data$topic_id_A, sep = "_"),
+      topic_2 = paste(.data$model_id_B, .data$topic_id_B, sep = "_")
     ) |> 
-    dplyr::filter(model_id_A == "mod_1")  # Only keep pairs involving model_1 topics
+    dplyr::filter(.data$model_id_A == "mod_1")  # Only keep pairs involving model_1 topics
 
   # Count how many distinct models each topic from model_1 is similar to
   topic_summary <- filtered_results |>
-    dplyr::group_by(topic_1) |>
+    dplyr::group_by(.data$topic_1) |>
     dplyr::reframe(
-      distinct_models = dplyr::n_distinct(model_id_B)  # Count unique models in model_2
+      distinct_models = dplyr::n_distinct(.data$model_id_B)  # Count unique models in model_2
     )
 
   # Filter topics that appear in at least 2 other models
   relevant_topics <- topic_summary |>
-    dplyr::filter(distinct_models >= n_sols)
+    dplyr::filter(.data$distinct_models >= n_sols)
 
   return(relevant_topics)
 }
@@ -138,6 +140,7 @@ filter_topics <- function(res, sim_threshold, n_sols) {
 #' @param sim_threshold Jaccard similarity threshold for filtering.
 #'
 #' @returns ggraph plot.
+#' @importFrom rlang .data
 #' @export
 viz_comparisons <- function(res, sim_threshold) {
   #library(igraph)
@@ -146,34 +149,34 @@ viz_comparisons <- function(res, sim_threshold) {
   #library(dplyr)
 
   filtered_results <- res |> 
-    dplyr::filter(jaccard >= sim_threshold) |> 
+    dplyr::filter(.data$jaccard >= sim_threshold) |> 
     dplyr::mutate(
       # Create identifiers for topics and models
-      topic_1 = paste(model_id_A, topic_id_A, sep = "_"),
-      topic_2 = paste(model_id_B, topic_id_B, sep = "_")
+      topic_1 = paste(.data$model_id_A, .data$topic_id_A, sep = "_"),
+      topic_2 = paste(.data$model_id_B, .data$topic_id_B, sep = "_")
     ) |> 
-    dplyr::filter(model_id_A == "mod_1")  # Only keep pairs involving model_1 topics
+    dplyr::filter(.data$model_id_A == "mod_1")  # Only keep pairs involving model_1 topics
 
   # Prepare edge list (connections between topics)
   edges <- filtered_results |>
-    dplyr::select(topic_1, topic_2, jaccard)
+    dplyr::select(.data$topic_1, .data$topic_2, .data$jaccard)
 
   # Prepare node list (unique topics with model information)
   nodes <- filtered_results |>
-    dplyr::select(topic_1, model_id_A) |>
-    dplyr::rename(topic = topic_1, model = model_id_A) |>
+    dplyr::select(.data$topic_1, .data$model_id_A) |>
+    dplyr::rename(topic = .data$topic_1, model = .data$model_id_A) |>
     dplyr::distinct() |>
     dplyr::bind_rows(
       filtered_results |>
-        dplyr::select(topic_2, model_id_B) |>
-        dplyr::rename(topic = topic_2, model = model_id_B) |>
+        dplyr::select(.data$topic_2, .data$model_id_B) |>
+        dplyr::rename(topic = .data$topic_2, model = .data$model_id_B) |>
         dplyr::distinct()
     ) |>
     dplyr::distinct()
 
   # Convert nodes to a factor for consistent coloring
   nodes <- nodes |>
-    dplyr::mutate(model = as.factor(model))
+    dplyr::mutate(model = as.factor(.data$model))
 
   # Create the graph object
   graph <- tidygraph::tbl_graph(nodes = nodes,
@@ -182,9 +185,12 @@ viz_comparisons <- function(res, sim_threshold) {
 
   # Visualize the graph
   ggraph::ggraph(graph, layout = "fr") +  # 'fr' = Fruchterman-Reingold layout
-    ggraph::geom_edge_link(ggplot2::aes(alpha = jaccard), color = "gray") +  # Edges
-    ggraph::geom_node_point(ggplot2::aes(color = model), alpha = 0.9) +  # Nodes
-    ggraph::geom_node_text(ggplot2::aes(label = topic), repel = TRUE, size = 3) +  # Labels
+    ggraph::geom_edge_link(ggplot2::aes(alpha = .data$jaccard),
+                           color = "gray") +  # Edges
+    ggraph::geom_node_point(ggplot2::aes(color = .data$model),
+                            alpha = 0.9) +  # Nodes
+    ggraph::geom_node_text(ggplot2::aes(label = .data$topic),
+                           repel = TRUE, size = 3) +  # Labels
     ggplot2::scale_color_brewer(palette = "Set2") +  # Distinct colors for models
     ggplot2::theme_void() +
     ggplot2::labs(title = "Topic Similarity Network",

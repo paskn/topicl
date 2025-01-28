@@ -7,6 +7,7 @@
 #' @param n_terms the number of terms to return.
 #'
 #' @returns A tibble with a ranked list of terms.
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -26,7 +27,7 @@ top_terms <- function(mod, topic_id, n_terms) {
     output <- mod |>
       tidytext::tidy(matrix = "beta",
                      log = FALSE) |>
-      dplyr::filter(topic == topic_id) |>
+      dplyr::filter(.data$topic == topic_id) |>
       dplyr::slice_max(beta, n=n_terms)
 
     return(output)

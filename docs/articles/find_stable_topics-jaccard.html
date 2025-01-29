@@ -73,7 +73,7 @@ appear in a majority of fits. Across fits, we compare topics to each
 other to test whether a given pair is the same. For comparison, we use
 compute Jaccard similarity on N top-words for a topic. Papers by
 Koltosov and colleagues advise fitting at least five models and consider
-a given pair of topics identical if their Jaccard similarity is =&lt;
+a given pair of topics identical if their Jaccard similarity is &gt;=
 90%. Then, if a stable topic persisted across at least 3 out of 5 model
 runs, you can consider this topic stable.</p>
 <p>In this vignette, we will fit five STM models to
@@ -83,7 +83,8 @@ and consider how many topics persists using <code>topicl</code>.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.pashakhin.org/topicl/">topicl</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.structuraltopicmodel.com/" class="external-link">stm</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jabiru/tictoc" class="external-link">tictoc</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/DavisVaughan/furrr" class="external-link">furrr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/DavisVaughan/furrr" class="external-link">furrr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <p><code>fit_stm</code> specifies STM parameters. We increase the
 maximum number of iterations for the EM algorithm and ensure that each
 iteration is performed with <code>max_it = 1000</code> and
@@ -113,36 +114,112 @@ for each model.</p>
 <span></span>
 <span></span>
 <span><span class="va">seeds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9934</span>,<span class="fl">9576</span>,<span class="fl">1563</span>,<span class="fl">3379</span>,<span class="fl">8505</span><span class="op">)</span></span></code></pre></div>
-<p>With <code>purrr::future_map()</code>, we fit five models with
+<p>With <code><a href="https://rdrr.io/pkg/furrr/man/future_map.html" class="external-link">furrr::future_map()</a></code>, we fit five models with
 different seeds in parallel. Given the high number of iterations, it can
 take up to 40 minutes.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="co"># toggle multiple parallel processes</span></span>
-<span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://furrr.futureverse.org/reference/future_map.html" class="external-link">future_map</a></span><span class="op">(</span><span class="va">seeds</span>, <span class="va">fit_stm</span>,                   </span>
-<span>                   .options <span class="op">=</span> <span class="fu"><a href="https://furrr.futureverse.org/reference/furrr_options.html" class="external-link">furrr_options</a></span><span class="op">(</span>seed<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span> <span class="co"># toggle back to sequential</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span>, workers <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="co"># toggle multiple parallel processes</span></span>
+<span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/furrr/man/future_map.html" class="external-link">future_map</a></span><span class="op">(</span><span class="va">seeds</span>, <span class="va">fit_stm</span>,                   </span>
+<span>                   .options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/furrr/man/furrr_options.html" class="external-link">furrr_options</a></span><span class="op">(</span>seed<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span> <span class="co"># toggle back to sequential</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 1109.954 sec elapsed</span></span></code></pre></div>
+<span><span class="co">#&gt; 1069.351 sec elapsed</span></span></code></pre></div>
 <p>We use <code><a href="../reference/compare_solutions.html">topicl::compare_solutions()</a></code> to calculate topic
 similarity on the level of <code>depth = 10</code> top terms for a
 topic. By default, top terms are produced by ranking term probabilities.
 Please note that (Koltsov et al., 2018) advice using 100 top terms.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_solutions.html">compare_solutions</a></span><span class="op">(</span><span class="va">mods</span>, depth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; comparing solutions <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  41% | ETA:  1s</span></span>
+<span><span class="co">#&gt; comparing solutions <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  42% | ETA:  1s</span></span>
 <span><span class="co">#&gt; comparing solutions <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span></span></code></pre></div>
+<p><code><a href="../reference/compare_solutions.html">compare_solutions()</a></code> produces a table with showing the
+results of comparisons. Here is how to read this output: each row shows
+a comparison of a topic A (column <code>topic_id_A</code>) from model A
+(column <code>model_id_A</code>) to topic B from model B
+(<code>topic_id_B</code> and <code>model_id_B</code>).</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">jaccard</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 5</span></span></span>
+<span><span class="co">#&gt;    model_id_A topic_id_A model_id_B topic_id_B jaccard</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> mod_1      topic_1    mod_2      topic_5      1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> mod_1      topic_13   mod_3      topic_20     1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> mod_1      topic_13   mod_4      topic_1      1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> mod_1      topic_11   mod_5      topic_1      1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> mod_2      topic_23   mod_3      topic_3      1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> mod_2      topic_4    mod_5      topic_11     1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> mod_3      topic_20   mod_4      topic_1      1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> mod_3      topic_6    mod_5      topic_5      1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> mod_1      topic_16   mod_2      topic_18     0.818</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> mod_1      topic_23   mod_2      topic_6      0.818</span></span></code></pre></div>
+<p>If model and topic IDs from the table above are confusing, they can
+be matched back to <code>mods</code>, which is a list containing models
+in the order of model IDs from the <code><a href="../reference/compare_solutions.html">compare_solutions()</a></code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mods</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; A topic model with 25 topics, 5000 documents and a 2632 word dictionary.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; A topic model with 25 topics, 5000 documents and a 2632 word dictionary.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; A topic model with 25 topics, 5000 documents and a 2632 word dictionary.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[4]]</span></span>
+<span><span class="co">#&gt; A topic model with 25 topics, 5000 documents and a 2632 word dictionary.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[5]]</span></span>
+<span><span class="co">#&gt; A topic model with 25 topics, 5000 documents and a 2632 word dictionary.</span></span></code></pre></div>
+<p>Topic IDs match IDs inside each model. To manually check the terms
+used for comparison of a given pair, you can use
+<code><a href="../reference/top_terms.html">top_terms()</a></code>. Let’s compare the terms from topic 13 of model
+1 to topic 1 from model 4, which showed 100% Jaccard similarity in the
+output of <code><a href="../reference/compare_solutions.html">compare_solutions()</a></code>.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/top_terms.html">top_terms</a></span><span class="op">(</span><span class="va">mods</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, topic_id <span class="op">=</span> <span class="fl">13</span>,n_terms <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 3</span></span></span>
+<span><span class="co">#&gt;    topic term     beta</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>    13 report 0.040<span style="text-decoration: underline;">0</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>    13 time   0.032<span style="text-decoration: underline;">0</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>    13 stori  0.026<span style="text-decoration: underline;">9</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>    13 new    0.026<span style="text-decoration: underline;">9</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>    13 media  0.023<span style="text-decoration: underline;">7</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>    13 news   0.021<span style="text-decoration: underline;">5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>    13 post   0.018<span style="text-decoration: underline;">1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>    13 york   0.017<span style="text-decoration: underline;">5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>    13 press  0.017<span style="text-decoration: underline;">0</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    13 articl 0.011<span style="text-decoration: underline;">1</span></span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/top_terms.html">top_terms</a></span><span class="op">(</span><span class="va">mods</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span>, topic_id <span class="op">=</span> <span class="fl">1</span>,n_terms <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 3</span></span></span>
+<span><span class="co">#&gt;    topic term     beta</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1 report 0.034<span style="text-decoration: underline;">7</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     1 time   0.033<span style="text-decoration: underline;">8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     1 stori  0.026<span style="text-decoration: underline;">4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     1 media  0.025<span style="text-decoration: underline;">1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     1 new    0.022<span style="text-decoration: underline;">4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     1 news   0.019<span style="text-decoration: underline;">1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     1 post   0.018<span style="text-decoration: underline;">9</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     1 press  0.016<span style="text-decoration: underline;">6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     1 york   0.015<span style="text-decoration: underline;">2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     1 articl 0.010<span style="text-decoration: underline;">9</span></span></span></code></pre></div>
 <p>What topics are similar and appear across fits is helpful to
 visualize with a network plot. Given output of
 <code><a href="../reference/compare_solutions.html">topicl::compare_solutions()</a></code> and a threshold,
 <code><a href="../reference/viz_comparisons.html">topicl::viz_comparisons()</a></code> will plot a topic-topic network.
-Here, we plot connections between topics =&lt; 80% similarity.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+Here, we plot connections between topics &gt;= 80% similarity.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/viz_comparisons.html">viz_comparisons</a></span><span class="op">(</span><span class="va">results</span>, <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="find_stable_topics-jaccard_files/figure-html/visualize-topic-similarity-1.png" width="700"></p>
 <p>With <code>topic::filter_topics()</code>, we can get a table with
 topic IDs and counts of their distinct pairs in other models.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/filter_topics.html">filter_topics</a></span><span class="op">(</span><span class="va">results</span>, <span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16 × 2</span></span></span>
 <span><span class="co">#&gt;    topic_1        distinct_models</span></span>
@@ -177,7 +254,7 @@ Staab, O. Koltsova, &amp; D. I. Ignatov (Eds.), Social Informatics (Vol.
 <div class="section level2">
 <h2 id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.4.2 (2024-10-31)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin20</span></span>
@@ -197,8 +274,8 @@ Staab, O. Koltsova, &amp; D. I. Ignatov (Eds.), Social Informatics (Vol.
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] furrr_0.3.1       future_1.34.0     tictoc_1.2.1      stm_1.3.7        </span></span>
-<span><span class="co">#&gt; [5] topicl_0.0.0.9000</span></span>
+<span><span class="co">#&gt; [1] dplyr_1.1.4       furrr_0.3.1       future_1.34.0     tictoc_1.2.1     </span></span>
+<span><span class="co">#&gt; [5] stm_1.3.7         topicl_0.0.0.9000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] gtable_0.3.6       xfun_0.45          bslib_0.7.0        ggplot2_3.5.1     </span></span>
@@ -208,19 +285,19 @@ Staab, O. Koltsova, &amp; D. I. Ignatov (Eds.), Social Informatics (Vol.
 <span><span class="co">#&gt; [17] Matrix_1.7-1       data.table_1.16.4  RColorBrewer_1.1-3 desc_1.4.3        </span></span>
 <span><span class="co">#&gt; [21] lifecycle_1.0.4    compiler_4.4.2     farver_2.1.2       stringr_1.5.1     </span></span>
 <span><span class="co">#&gt; [25] textshaping_0.4.0  munsell_0.5.1      ggforce_0.4.2      graphlayouts_1.2.1</span></span>
-<span><span class="co">#&gt; [29] codetools_0.2-20   htmltools_0.5.8.1  SnowballC_0.7.1    sass_0.4.9        </span></span>
+<span><span class="co">#&gt; [29] codetools_0.2-20   SnowballC_0.7.1    htmltools_0.5.8.1  sass_0.4.9        </span></span>
 <span><span class="co">#&gt; [33] yaml_2.3.8         tidytext_0.4.2     pillar_1.10.1      pkgdown_2.1.1     </span></span>
 <span><span class="co">#&gt; [37] jquerylib_0.1.4    tidyr_1.3.1        MASS_7.3-61        cachem_1.1.0      </span></span>
 <span><span class="co">#&gt; [41] viridis_0.6.5      parallelly_1.39.0  tidyselect_1.2.1   digest_0.6.37     </span></span>
-<span><span class="co">#&gt; [45] stringi_1.8.4      dplyr_1.1.4        reshape2_1.4.4     purrr_1.0.2       </span></span>
-<span><span class="co">#&gt; [49] listenv_0.9.1      labeling_0.4.3     polyclip_1.10-7    fastmap_1.2.0     </span></span>
-<span><span class="co">#&gt; [53] grid_4.4.2         colorspace_2.1-1   cli_3.6.3          magrittr_2.0.3    </span></span>
-<span><span class="co">#&gt; [57] utf8_1.2.4         ggraph_2.2.1       tidygraph_1.3.1    withr_3.0.2       </span></span>
-<span><span class="co">#&gt; [61] scales_1.3.0       rmarkdown_2.27     globals_0.16.3     igraph_2.0.3      </span></span>
-<span><span class="co">#&gt; [65] gridExtra_2.3      ragg_1.3.2         memoise_2.0.1      evaluate_0.24.0   </span></span>
-<span><span class="co">#&gt; [69] knitr_1.47         viridisLite_0.4.2  rlang_1.1.4        Rcpp_1.0.14       </span></span>
-<span><span class="co">#&gt; [73] glue_1.8.0         tweenr_2.0.3       rstudioapi_0.16.0  jsonlite_1.8.8    </span></span>
-<span><span class="co">#&gt; [77] R6_2.5.1           plyr_1.8.9         systemfonts_1.1.0  fs_1.6.4</span></span></code></pre></div>
+<span><span class="co">#&gt; [45] stringi_1.8.4      reshape2_1.4.4     purrr_1.0.2        listenv_0.9.1     </span></span>
+<span><span class="co">#&gt; [49] labeling_0.4.3     polyclip_1.10-7    fastmap_1.2.0      grid_4.4.2        </span></span>
+<span><span class="co">#&gt; [53] colorspace_2.1-1   cli_3.6.3          magrittr_2.0.3     ggraph_2.2.1      </span></span>
+<span><span class="co">#&gt; [57] tidygraph_1.3.1    utf8_1.2.4         withr_3.0.2        scales_1.3.0      </span></span>
+<span><span class="co">#&gt; [61] rmarkdown_2.27     globals_0.16.3     igraph_2.0.3       gridExtra_2.3     </span></span>
+<span><span class="co">#&gt; [65] ragg_1.3.2         memoise_2.0.1      evaluate_0.24.0    knitr_1.47        </span></span>
+<span><span class="co">#&gt; [69] viridisLite_0.4.2  rlang_1.1.4        Rcpp_1.0.14        glue_1.8.0        </span></span>
+<span><span class="co">#&gt; [73] tweenr_2.0.3       jsonlite_1.8.8     R6_2.5.1           plyr_1.8.9        </span></span>
+<span><span class="co">#&gt; [77] systemfonts_1.1.0  fs_1.6.4</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   find_stable_topics-jaccard: find_stable_topics-jaccard.html
-last_built: 2025-01-27T12:56Z
+last_built: 2025-01-29T09:29Z
 urls:
   reference: https://www.pashakhin.org/topicl/reference
   article: https://www.pashakhin.org/topicl/articles

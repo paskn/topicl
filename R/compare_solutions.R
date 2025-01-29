@@ -140,11 +140,7 @@ filter_topics <- function(res, sim_threshold, n_sols) {
 #' @param sim_threshold Jaccard similarity threshold for filtering.
 #'
 #' @returns ggraph plot.
-<<<<<<< HEAD
 #' @importFrom rlang .data
-=======
-#' @importFrom rlang .datan
->>>>>>> origin/master
 #' @export
 viz_comparisons <- function(res, sim_threshold) {
   #library(igraph)

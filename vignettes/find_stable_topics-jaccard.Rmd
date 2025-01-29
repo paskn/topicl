@@ -2,7 +2,7 @@
 title: "Find stable topics in STM with Jaccard similarity"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{find_stable_topics-jaccard}
+  %\VignetteIndexEntry{Find stable topics in STM with Jaccard similarity}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

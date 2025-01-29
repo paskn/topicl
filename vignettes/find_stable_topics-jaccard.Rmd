@@ -50,7 +50,7 @@ data, topic similarity across fits also increases. I cannot say if `K
 = 25` is optimal for these data, but this number of topics is used in
 STM documentation.
 
-With <random.org>, we generated five random `seeds` for each model.
+With <https://random.org>, we generated five random `seeds` for each model.
 
 ```{r model-specification}
 fit_stm <- function(seed) {
@@ -129,16 +129,16 @@ top_terms(mods[[4]], topic_id = 1,n_terms = 10)
 ```
 
 
-What topics are similar and appear across fits is helpful to visualize
-with a network plot. Given output of `topicl::compare_solutions()` and a
-threshold, `topicl::viz_comparisons()` will plot a topic-topic network.
-Here, we plot connections between topics >= 80% similarity.
+Similar topics persisting across fits is helpful to visualize with a
+network plot. Given output of `topicl::compare_solutions()` and a
+threshold, `topicl::viz_comparisons()` will plot a topic-topic
+network. Here, we plot connections between topics >= 80% similarity.
 
 ```{r visualize-topic-similarity}
 viz_comparisons(results, 0.8)
 ```
 
-With `topic::filter_topics()`, we can get a table with topic IDs and
+With `topicl::filter_topics()`, we can get a table with topic IDs and
 counts of their distinct pairs in other models.
 
 ```{r count-topic-appearance}

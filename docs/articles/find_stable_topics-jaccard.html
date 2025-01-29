@@ -93,8 +93,8 @@ experience, with an increased number of iterations on these data, topic
 similarity across fits also increases. I cannot say if
 <code>K = 25</code> is optimal for these data, but this number of topics
 is used in STM documentation.</p>
-<p>With &lt;random.org&gt;, we generated five random <code>seeds</code>
-for each model.</p>
+<p>With <a href="https://random.org" class="external-link uri">https://random.org</a>,
+we generated five random <code>seeds</code> for each model.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_stm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">seed</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">K</span> <span class="op">=</span> <span class="fl">25</span></span>
@@ -124,14 +124,15 @@ take up to 40 minutes.</p>
 <span>                   .options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/furrr/man/furrr_options.html" class="external-link">furrr_options</a></span><span class="op">(</span>seed<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/future/man/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span> <span class="co"># toggle back to sequential</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 1069.351 sec elapsed</span></span></code></pre></div>
+<span><span class="co">#&gt; 1077.603 sec elapsed</span></span></code></pre></div>
 <p>We use <code><a href="../reference/compare_solutions.html">topicl::compare_solutions()</a></code> to calculate topic
 similarity on the level of <code>depth = 10</code> top terms for a
 topic. By default, top terms are produced by ranking term probabilities.
 Please note that (Koltsov et al., 2018) advice using 100 top terms.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_solutions.html">compare_solutions</a></span><span class="op">(</span><span class="va">mods</span>, depth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; comparing solutions <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  42% | ETA:  1s</span></span>
+<span><span class="co">#&gt; comparing solutions <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  42% | ETA:  1s</span></span>
+<span><span class="co">#&gt; comparing solutions <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  90% | ETA:  0s</span></span>
 <span><span class="co">#&gt; comparing solutions <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span></span></code></pre></div>
 <p><code><a href="../reference/compare_solutions.html">compare_solutions()</a></code> produces a table with showing the
 results of comparisons. Here is how to read this output: each row shows
@@ -209,15 +210,15 @@ output of <code><a href="../reference/compare_solutions.html">compare_solutions(
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     1 press  0.016<span style="text-decoration: underline;">6</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     1 york   0.015<span style="text-decoration: underline;">2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     1 articl 0.010<span style="text-decoration: underline;">9</span></span></span></code></pre></div>
-<p>What topics are similar and appear across fits is helpful to
-visualize with a network plot. Given output of
-<code><a href="../reference/compare_solutions.html">topicl::compare_solutions()</a></code> and a threshold,
-<code><a href="../reference/viz_comparisons.html">topicl::viz_comparisons()</a></code> will plot a topic-topic network.
-Here, we plot connections between topics &gt;= 80% similarity.</p>
+<p>Similar topics persisting across fits is helpful to visualize with a
+network plot. Given output of <code><a href="../reference/compare_solutions.html">topicl::compare_solutions()</a></code>
+and a threshold, <code><a href="../reference/viz_comparisons.html">topicl::viz_comparisons()</a></code> will plot a
+topic-topic network. Here, we plot connections between topics &gt;= 80%
+similarity.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/viz_comparisons.html">viz_comparisons</a></span><span class="op">(</span><span class="va">results</span>, <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="find_stable_topics-jaccard_files/figure-html/visualize-topic-similarity-1.png" width="700"></p>
-<p>With <code>topic::filter_topics()</code>, we can get a table with
+<p>With <code><a href="../reference/filter_topics.html">topicl::filter_topics()</a></code>, we can get a table with
 topic IDs and counts of their distinct pairs in other models.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/filter_topics.html">filter_topics</a></span><span class="op">(</span><span class="va">results</span>, <span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span></span>
